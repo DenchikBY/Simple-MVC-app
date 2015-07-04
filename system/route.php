@@ -62,6 +62,16 @@ class Route
         $controller->response = $controller->$actionName(...$params);
         $controller->after();
         DB::closeConnection();
+        if (Config::get('short_response') == true) {
+            $response = preg_replace([
+                '/<!--([^\[|(<!)].*)/',
+                '/(?<!\S)\/\/\s*[^\r\n]*/',
+                '/\s{2,}/',
+                '/(\r?\n)/'
+            ], '', ob_get_contents());
+            ob_clean();
+            echo $response;
+        }
     }
 
     private function routeToRegEx($route)
