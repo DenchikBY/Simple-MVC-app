@@ -64,4 +64,9 @@ class DB
         return self::getConnection()->query($query);
     }
 
+    public static function query($query)
+    {
+        return self::getConnection()->query($query);
+    }
+
 }

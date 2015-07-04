@@ -24,7 +24,7 @@ class View
         return ob_get_clean();
     }
 
-    public function share($key, $value)
+    public function share($key, $value = null)
     {
         if (gettype($key) == 'array') {
             $this->data = array_merge($this->data, $key);
