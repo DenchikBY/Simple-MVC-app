@@ -1,16 +1,22 @@
 <?php namespace App\Controllers;
 
+use App\Models\Topic;
 use System\Controller;
-use System\Db;
+use System\DB;
 
 class Index extends Controller
 {
 
     public function index()
     {
-        //echo 123;
-        //return $this->view->render('index/index');
-        Db::getConnection();
+        /*
+        $topic = new Topic();
+        $topic->title = 'title';
+        $topic->text = 'text';
+        $topic->save();
+        var_dump($topic->id);
+        $topic->update(['title' => '123', 'text' => 'blalalalala']);
+        */
         $this->view->share('name', 'Denchik');
     }
 
