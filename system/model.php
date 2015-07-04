@@ -48,12 +48,12 @@ class Model
         return DB::update($this->table, $data);
     }
 
-    public function save()
+    public function save(array $data = null)
     {
         if (isset($this->attributes[self::$primaryKey])) {
-            $this->update();
+            $this->update($data);
         } else {
-            $this->insert();
+            $this->insert($data);
         }
     }
 
