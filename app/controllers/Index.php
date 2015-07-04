@@ -17,4 +17,9 @@ class Index extends Controller
         var_dump($action, $page);
     }
 
+    public function page($id)
+    {
+        echo $id;
+    }
+
 }

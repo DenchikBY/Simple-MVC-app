@@ -30,11 +30,21 @@ class Route
     private static function findRoute()
     {
         foreach (self::$routes as $route => $action) {
-            $regEx = str_replace('/', '\/', $route);
-            $regEx = '/' . $regEx . '$/';
-            if (preg_match($regEx, $_SERVER['REQUEST_URI'], $matches)) {
+            if (gettype($route) == 'integer') {
+                $route = $action;
+            }
+            $regEx = self::routeToRegEx($route);
+            if (preg_match($regEx[0], $_SERVER['REQUEST_URI'], $matches)) {
                 self::$currentRoute = [$route, explode('@', $action)];
-                self::startRoute(array_slice($matches, 1));
+                $params = array_slice($matches, 1);
+                for ($i = 0; $i < 2; ++$i) {
+                    $pos = $regEx[1][$i];
+                    if ($pos !== null) {
+                        self::$currentRoute[1][$i] = $params[$pos];
+                        unset($params[$pos]);
+                    }
+                }
+                self::startRoute($params);
                 break;
             }
         }
@@ -51,6 +61,24 @@ class Route
         $controller->before();
         $controller->response = $controller->$actionName(...$params);
         $controller->after();
+    }
+
+    private function routeToRegEx($route)
+    {
+        $actionParams = [null, null];
+        $counter = 0;
+        $regEx = preg_replace_callback('/{.+}/U', function ($matches) use (&$counter, &$actionParams) {
+            if ($matches[0] == '{controller}') {
+                $actionParams[0] = $counter;
+            } elseif ($matches[0] == '{action}') {
+                $actionParams[1] = $counter;
+            }
+            ++$counter;
+            return '([0-9A-Za-z\-]+)';
+        }, $route);
+        $regEx = str_replace('/', '\/', $regEx);
+        $regEx = '/' . $regEx . '$/';
+        return [$regEx, $actionParams];
     }
 
     public function error404()
