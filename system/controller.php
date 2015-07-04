@@ -6,7 +6,6 @@ class Controller
 
     protected $view;
     public $response;
-    public $route;
 
     public function __construct()
     {
@@ -22,7 +21,7 @@ class Controller
         if (strlen($this->response) > 0) {
             echo $this->response;
         } else {
-            echo $this->view->render($this->route[0] . '/' . $this->route[1]);
+            echo $this->view->render(Route::$currentRoute[1][0] . '/' . Route::$currentRoute[1][1]);
         }
     }
 

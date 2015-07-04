@@ -12,4 +12,9 @@ class Index extends Controller
         $this->view->share('name', 'Denchik');
     }
 
+    public function admin($action, $page)
+    {
+        var_dump($action, $page);
+    }
+
 }
