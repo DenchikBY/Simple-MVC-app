@@ -61,6 +61,7 @@ class Route
         $controller->before();
         $controller->response = $controller->$actionName(...$params);
         $controller->after();
+        Db::closeConnection();
     }
 
     private function routeToRegEx($route)
