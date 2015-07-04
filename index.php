@@ -6,7 +6,7 @@ define('APP_PATH', __DIR__);
 
 function __autoload($path)
 {
-    include realpath(__DIR__ . '/' . $path . '.php');
+    include realpath(strtolower(__DIR__ . DIRECTORY_SEPARATOR . str_replace('\\', '/', $path) . '.php'));
 }
 
 Route::init();
