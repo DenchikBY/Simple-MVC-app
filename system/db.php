@@ -10,8 +10,8 @@ class Db
 
     public static function getConnection()
     {
-        $config = Config::get('db');
         if (!self::$connection) {
+            $config = Config::get('db');
             self::$connection = new PDO($config['driver'] . ':host=' . $config['host'] . ';dbname=' . $config['database'], $config['username'], $config['password']);
         }
         return self::$connection;
