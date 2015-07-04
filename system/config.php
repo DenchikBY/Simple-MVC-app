@@ -11,11 +11,10 @@ class Config
             self::$config = include APP_PATH . '/config.php';
         }
         $path = explode('.', $path);
-        $config = &self::$config;
-        $return = null;
+        $return = &self::$config;
         foreach ($path as $part) {
-            if (isset($config[$part])) {
-                $config = $return = &$config[$part];
+            if (isset($return[$part])) {
+                $return = &$return[$part];
             } else {
                 $return = null;
                 break;
