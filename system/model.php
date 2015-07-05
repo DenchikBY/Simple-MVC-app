@@ -5,6 +5,7 @@ class Model
 
     protected $db, $attributes = [];
     public static $primaryKey = 'id';
+    public $timestamps = true;
 
     public function __construct(array $data = null)
     {
@@ -33,6 +34,9 @@ class Model
     public function insert(array $data = null)
     {
         if ($data) $this->fill($data);
+        if ($this->timestamps) {
+            $this->attributes['created_at'] = date('Y-m-d H:i:s');
+        }
         $response = DB::insert($this->table, $this->attributes);
         $this->attributes[self::$primaryKey] = $this->db->lastInsertId();
         return $response;
@@ -43,7 +47,10 @@ class Model
         if ($data) {
             $data['id'] = $this->attributes['id'];
         } else {
-            $data = $this->attributes;
+            $data = &$this->attributes;
+        }
+        if ($this->timestamps) {
+            $data['updated_at'] = date('Y-m-d H:i:s');
         }
         return DB::update($this->table, $data);
     }
