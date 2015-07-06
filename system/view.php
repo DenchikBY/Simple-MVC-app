@@ -4,15 +4,15 @@
 class View
 {
 
-    private $viewsPath = APP_PATH . '/app/views';
     public $layout = 'main';
     private $data = [];
 
     public function render($viewName)
     {
-        $viewPath = realpath($this->viewsPath . '/' . $viewName . '.php');
-        $layoutPath = realpath($this->viewsPath . '/layouts/' . $this->layout . '.php');
-        $this->share('content', $this->renderFile($viewPath));
+        $viewsPath = APP_PATH . '/app/views';
+        $viewPath = realpath($viewsPath . '/' . $viewName . '.php');
+        $layoutPath = realpath($viewsPath . '/layouts/' . $this->layout . '.php');
+        $this->share('content', $viewPath ? $this->renderFile($viewPath) : '');
         return $this->renderFile($layoutPath);
     }
 

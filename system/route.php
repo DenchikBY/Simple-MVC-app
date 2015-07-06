@@ -44,6 +44,7 @@ class Route
                         unset($params[$pos]);
                     }
                 }
+                $params = array_values($params);
                 self::startRoute($params);
                 break;
             }
@@ -53,13 +54,13 @@ class Route
         }
     }
 
-    private static function startRoute($params)
+    private static function startRoute(array &$params)
     {
         $controllerName = 'App\\Controllers\\' . ucfirst(self::$currentRoute[1][0]);
         $actionName = self::$currentRoute[1][1];
         $controller = new $controllerName;
         $controller->before();
-        $controller->response = $controller->$actionName(...$params);
+        $controller->response = self::startControllerAction($controller, $actionName, $params);
         $controller->after();
         DB::closeConnection();
         if (Config::get('short_response') == true) {
@@ -74,7 +75,7 @@ class Route
         }
     }
 
-    private function routeToRegEx($route)
+    private static function routeToRegEx($route)
     {
         $actionParams = [null, null];
         $counter = 0;
@@ -90,6 +91,28 @@ class Route
         $regEx = str_replace('/', '\/', $regEx);
         $regEx = '/' . $regEx . '$/';
         return [$regEx, $actionParams];
+    }
+
+    private static function startControllerAction(&$controller, &$actionName, array &$params = [])
+    {
+        $count = count($params);
+        if (phpversion() >= 5.6) {
+            return eval('$controller->$actionName(...$params);');
+        } else {
+            if ($count == 0) {
+                return $controller->$actionName();
+            } else if ($count == 1) {
+                return $controller->$actionName($params[0]);
+            } else if ($count == 2) {
+                return $controller->$actionName($params[0], $params[1]);
+            } else if ($count == 3) {
+                return $controller->$actionName($params[0], $params[1], $params[2]);
+            } else if ($count == 4) {
+                return $controller->$actionName($params[0], $params[1], $params[2], $params[3]);
+            } else {
+                return $controller->$actionName($params[0], $params[1], $params[2], $params[3], $params[4]);
+            }
+        }
     }
 
     public function error404()
