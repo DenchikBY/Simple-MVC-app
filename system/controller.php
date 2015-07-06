@@ -1,7 +1,7 @@
 <?php namespace System;
 
 
-class Controller
+abstract class Controller
 {
 
     protected $view;
