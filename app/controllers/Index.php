@@ -17,6 +17,7 @@ class Index extends Controller
         var_dump($topic->id);
         $topic->update(['title' => '123', 'text' => 'blalalalala']);
         */
+        //var_dump(Topic::select('where id > 20 order by id desc limit 5'));
         $this->view->share('name', 'Denchik');
     }
 

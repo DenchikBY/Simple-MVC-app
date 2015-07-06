@@ -1,6 +1,8 @@
 <?php namespace System;
 
-class Model
+use PDO;
+
+abstract class Model
 {
 
     protected $db, $attributes = [];
@@ -29,6 +31,17 @@ class Model
     public function fill(array $data)
     {
         $this->attributes = array_merge($this->attributes, $data);
+    }
+
+    public static function select($query = '')
+    {
+        $model = new static;
+        $result = DB::query('SELECT * FROM ' . $model->table . ' ' . $query)->fetchAll(PDO::FETCH_ASSOC);
+        unset($model);
+        for ($i = 0; $i < count($result); ++$i) {
+            $result[$i] = new static($result[$i]);
+        }
+        return $result;
     }
 
     public function insert(array $data = null)
