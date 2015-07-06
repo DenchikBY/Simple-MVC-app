@@ -24,6 +24,9 @@ class Route
         if (ltrim($base, '/')) {
             $_SERVER['REQUEST_URI'] = substr($_SERVER['REQUEST_URI'], strlen($base));
         }
+        if ($_SERVER['REQUEST_URI'] != '/') {
+            $_SERVER['REQUEST_URI'] = ltrim($_SERVER['REQUEST_URI'], '/');
+        }
         return $_SERVER['REQUEST_URI'];
     }
 
@@ -89,7 +92,7 @@ class Route
             return '([0-9A-Za-z\-]+)';
         }, $route);
         $regEx = str_replace('/', '\/', $regEx);
-        $regEx = '/' . $regEx . '$/';
+        $regEx = '/^' . $regEx . '$/';
         return [$regEx, $actionParams];
     }
 
