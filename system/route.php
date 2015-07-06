@@ -95,24 +95,12 @@ class Route
 
     private static function startControllerAction(&$controller, &$actionName, array &$params = [])
     {
-        $count = count($params);
-        if (phpversion() >= 5.6) {
-            return eval('$controller->$actionName(...$params);');
-        } else {
-            if ($count == 0) {
-                return $controller->$actionName();
-            } else if ($count == 1) {
-                return $controller->$actionName($params[0]);
-            } else if ($count == 2) {
-                return $controller->$actionName($params[0], $params[1]);
-            } else if ($count == 3) {
-                return $controller->$actionName($params[0], $params[1], $params[2]);
-            } else if ($count == 4) {
-                return $controller->$actionName($params[0], $params[1], $params[2], $params[3]);
-            } else {
-                return $controller->$actionName($params[0], $params[1], $params[2], $params[3], $params[4]);
-            }
+        $paramsString = '';
+        for ($i = 0; $i < count($params); ++$i) {
+            $paramsString .= '$params[' . $i . '], ';
         }
+        $paramsString = substr($paramsString, 0, strlen($paramsString) - 2);
+        return eval('$controller->$actionName(' . $paramsString . ');');
     }
 
     public function error404()
