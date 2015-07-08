@@ -5,6 +5,8 @@ class Route
 
     private static $routes;
     public static $currentRoute;
+    private static $baseUrl;
+    private static $requestUrl;
 
     public static function init()
     {
@@ -21,13 +23,11 @@ class Route
     private static function getRequestUrl()
     {
         $base = dirname($_SERVER['PHP_SELF']);
-        if (ltrim($base, '/')) {
-            $_SERVER['REQUEST_URI'] = substr($_SERVER['REQUEST_URI'], strlen($base));
+        self::$baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . $base;
+        self::$requestUrl = substr($_SERVER['REQUEST_URI'], strlen($base));
+        if (self::$requestUrl != '/') {
+        	self::$requestUrl = ltrim(self::$requestUrl, '/');
         }
-        if ($_SERVER['REQUEST_URI'] != '/') {
-            $_SERVER['REQUEST_URI'] = ltrim($_SERVER['REQUEST_URI'], '/');
-        }
-        return $_SERVER['REQUEST_URI'];
     }
 
     private static function findRoute()
@@ -37,7 +37,7 @@ class Route
                 $route = $action;
             }
             $regEx = self::routeToRegEx($route);
-            if (preg_match($regEx[0], $_SERVER['REQUEST_URI'], $matches)) {
+            if (preg_match($regEx[0], self::$requestUrl, $matches)) {
                 self::$currentRoute = [$route, explode('@', $action)];
                 $params = array_slice($matches, 1);
                 for ($i = 0; $i < 2; ++$i) {
