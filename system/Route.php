@@ -10,7 +10,7 @@ class Route
 
     public static function init()
     {
-        $routesPath = realpath(APP_PATH . '/app/routes.php');
+        $routesPath = realpath(APP_PATH . '/routes.php');
         if (file_exists($routesPath)) {
             self::$routes = include $routesPath;
             self::getRequestUrl();

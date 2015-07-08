@@ -8,7 +8,7 @@ class Config
     private static function initialGet()
     {
         if (!self::$config) {
-            self::$config = include APP_PATH . '/config.php';
+            self::$config = include BASE_PATH . '/config.php';
         }
     }
 

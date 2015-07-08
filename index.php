@@ -5,7 +5,8 @@ ini_set('display_errors', 1);
 
 use System\Route;
 
-define('APP_PATH', __DIR__);
+define('BASE_PATH', __DIR__);
+define('APP_PATH', __DIR__ . DIRECTORY_SEPARATOR . 'app');
 
 spl_autoload_register(function ($class) {
     $filePath = __DIR__ . DIRECTORY_SEPARATOR . str_replace('\\', '/', $class) . '.php';

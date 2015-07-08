@@ -9,7 +9,7 @@ class View
 
     public function render($viewName)
     {
-        $viewsPath = APP_PATH . '/app/Views';
+        $viewsPath = APP_PATH . '/Views';
         $viewPath = realpath($viewsPath . '/' . $viewName . '.php');
         $layoutPath = realpath($viewsPath . '/layouts/' . $this->layout . '.php');
         $this->share('content', $viewPath ? $this->renderFile($viewPath) : '');
