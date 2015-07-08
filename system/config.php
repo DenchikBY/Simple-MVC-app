@@ -12,7 +12,7 @@ class Config
         }
     }
 
-    public static function get($path = null)
+    public static function get($path = null, $default = null)
     {
         self::initialGet();
         if ($path == null) {
@@ -24,7 +24,7 @@ class Config
                 if (isset($return[$part])) {
                     $return = $return[$part];
                 } else {
-                    $return = null;
+                    $return = $default;
                     break;
                 }
             }
