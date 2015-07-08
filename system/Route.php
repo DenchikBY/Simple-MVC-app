@@ -4,7 +4,7 @@ class Route
 {
 
     private static $routes;
-    public static $currentRoute;
+    private static $currentRoute;
     private static $baseUrl;
     private static $requestUrl;
 
@@ -111,6 +111,16 @@ class Route
         header('HTTP/1.0 404 Not Found - Archive Empty');
         echo '404 Not Found';
         exit;
+    }
+
+    public static function getBaseUrl()
+    {
+        return self::$baseUrl;
+    }
+
+    public static function getCurrentRoute()
+    {
+        return self::$currentRoute;
     }
 
 }

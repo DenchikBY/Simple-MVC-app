@@ -21,7 +21,8 @@ abstract class Controller
         if (strlen($this->response) > 0) {
             echo $this->response;
         } else {
-            echo $this->view->render(Route::$currentRoute[1][0] . '/' . Route::$currentRoute[1][1]);
+            $currentRoute = Route::getCurrentRoute();
+            echo $this->view->render($currentRoute[1][0] . '/' . $currentRoute[1][1]);
         }
     }
 
