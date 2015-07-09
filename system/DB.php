@@ -14,7 +14,7 @@ class DB
         $connection = $connection ?: self::$currentConnection ?: Config::get('db.default');
         if (!isset(self::$connections[$connection])) {
             $config = Config::get('db.connections.' . $connection);
-            self::$connections[$connection] = new PDO($config['driver'] . ':host=' . $config['host'] . ';dbname=' . $config['database'], $config['username'], $config['password']);
+            self::$connections[$connection] = new PDO($config['driver'] . ':host=' . $config['host'] . ';dbname=' . $config['database'] . ';charset=utf8', $config['username'], $config['password']);
             self::$connections[$connection]->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
         return self::$connections[$connection];
