@@ -34,7 +34,17 @@ class DB
 
     private static function implodeValues(&$data)
     {
-        return  '"' . implode('", "', array_values($data)) . '"';
+        $values = '"';
+        $i = 0;
+        $count = count($data);
+        foreach ($data as $value) {
+            ++$i;
+            $values .= addslashes($value) . '"';
+            if ($i < $count) {
+                $values .= ', "';
+            }
+        }
+        return $values;
     }
 
     private static function implodeSetForUpdate(&$data)
