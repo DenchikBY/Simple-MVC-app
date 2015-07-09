@@ -106,7 +106,7 @@ class Route
         return eval('$controller->$actionName(' . $paramsString . ');');
     }
 
-    public function error404()
+    public static function error404()
     {
         header('HTTP/1.0 404 Not Found - Archive Empty');
         echo '404 Not Found';
