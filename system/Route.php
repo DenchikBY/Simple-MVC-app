@@ -63,7 +63,7 @@ class Route
         $actionName = self::$currentRoute[1][1];
         $controller = new $controllerName;
         $controller->before();
-        $controller->response = self::startControllerAction($controller, $actionName, $params);
+        $controller->response = call_user_func_array([$controller, $actionName], $params);
         $controller->after();
         DB::closeConnection();
         if (Config::get('short_response') == true) {
@@ -102,16 +102,6 @@ class Route
         $regEx = str_replace('/', '\/', $regEx);
         $regEx = '/^' . $regEx . '$/';
         return [$regEx, $actionParams];
-    }
-
-    private static function startControllerAction(&$controller, &$actionName, array &$params = [])
-    {
-        $paramsString = '';
-        for ($i = 0; $i < count($params); ++$i) {
-            $paramsString .= '$params[' . $i . '], ';
-        }
-        $paramsString = substr($paramsString, 0, strlen($paramsString) - 2);
-        return eval('$controller->$actionName(' . $paramsString . ');');
     }
 
     public static function error404()
