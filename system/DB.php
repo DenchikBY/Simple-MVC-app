@@ -34,34 +34,24 @@ class DB
 
     private static function implodeValues(&$data)
     {
-        $values = '"';
-        $i = 0;
-        $count = count($data);
+        $return = '"';
         foreach ($data as $value) {
-            ++$i;
-            $values .= addslashes($value) . '"';
-            if ($i < $count) {
-                $values .= ', "';
-            }
+            $return .= addslashes($value) . '", "';
         }
-        return $values;
+        $return = substr($return, 0, -3);
+        return $return;
     }
 
     private static function implodeSetForUpdate(&$data)
     {
-        $response = '';
-        $i = 2;
-        $size = count($data);
+        $return = '';
         foreach ($data as $attr => $value) {
             if ($attr != Model::$primaryKey) {
-                $response .= $attr . '="' . $value . '"';
+                $return .= $attr . '="' . $value . '", ';
             }
-            if ($i < $size) {
-                $response .= ', ';
-            }
-            ++$i;
         }
-        return $response;
+        $return = substr($return, 0, -2);
+        return $return;
     }
 
     public static function select($table, $query = '')
@@ -83,6 +73,7 @@ class DB
             $keys = @self::implodeKeys(array_shift($data));
         }
         $query = 'INSERT INTO ' . $table . ' (' . $keys . ') VALUES ' . $values;
+        var_dump($query);
         return self::getConnection()->query($query);
     }
 
