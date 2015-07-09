@@ -61,7 +61,18 @@ class DB
 
     public static function insert($table, $data)
     {
-        $query = 'INSERT INTO ' . $table . ' (' . self::implodeKeys($data) . ') VALUES (' . self::implodeValues($data) . ')';
+        if (isAssoc($data)) {
+            $values = '(' . self::implodeValues($data) . ')';
+            $keys = self::implodeKeys($data);
+        } else {
+            $values = '';
+            foreach ($data as $row) {
+                $values .= '(' . self::implodeValues($row) . '), ';
+            }
+            $values = substr($values, 0, -2);
+            $keys = @self::implodeKeys(array_shift($data));
+        }
+        $query = 'INSERT INTO ' . $table . ' (' . $keys . ') VALUES ' . $values;
         return self::getConnection()->query($query);
     }
 
