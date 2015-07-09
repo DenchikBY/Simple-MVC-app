@@ -73,7 +73,6 @@ class DB
             $keys = @self::implodeKeys(array_shift($data));
         }
         $query = 'INSERT INTO ' . $table . ' (' . $keys . ') VALUES ' . $values;
-        var_dump($query);
         return self::getConnection()->query($query);
     }
 
