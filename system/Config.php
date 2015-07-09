@@ -22,7 +22,7 @@ class Config
             $return = &self::$config;
             foreach ($path as $part) {
                 if (isset($return[$part])) {
-                    $return = $return[$part];
+                    $return = &$return[$part];
                 } else {
                     $return = $default;
                     break;

@@ -6,22 +6,24 @@ use PDO;
 class DB
 {
 
-    private static $connection;
+    private static $connections = [];
+    private static $currentConnection = null;
 
-    public static function getConnection()
+    public static function getConnection($connection = null)
     {
-        if (!self::$connection) {
-            $config = Config::get('db');
-            self::$connection = new PDO($config['driver'] . ':host=' . $config['host'] . ';dbname=' . $config['database'], $config['username'], $config['password']);
-            self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $connection = $connection ?: self::$currentConnection ?: Config::get('db.default');
+        if (!isset(self::$connections[$connection])) {
+            $config = Config::get('db.connections.' . $connection);
+            self::$connections[$connection] = new PDO($config['driver'] . ':host=' . $config['host'] . ';dbname=' . $config['database'], $config['username'], $config['password']);
+            self::$connections[$connection]->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
-        return self::$connection;
+        return self::$connections[$connection];
     }
 
     public static function closeConnection()
     {
-        if (self::$connection) {
-            self::$connection = null;
+        foreach (self::$connections as $driver => $connection) {
+            self::$connections[$driver] = null;
         }
     }
 
@@ -52,6 +54,11 @@ class DB
         return $response;
     }
 
+    public static function select($table, $query = '')
+    {
+        return self::query('SELECT * FROM ' . $table . ' ' . $query)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public static function insert($table, $data)
     {
         $query = 'INSERT INTO ' . $table . ' (' . self::implodeKeys($data) . ') VALUES (' . self::implodeValues($data) . ')';
@@ -66,7 +73,15 @@ class DB
 
     public static function query($query)
     {
-        return self::getConnection()->query($query);
+        $return = self::getConnection()->query($query);
+        self::$currentConnection = null;
+        return $return;
+    }
+
+    public static function on($connection)
+    {
+        self::$currentConnection = $connection;
+        return new self;
     }
 
 }

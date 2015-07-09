@@ -5,11 +5,16 @@ return [
     'short_response' => false,
 
     'db' => [
-        'driver' => 'mysql', //mysql, pgsql
-        'host' => 'localhost',
-        'username' => 'root',
-        'password' => '',
-        'database' => 'mvc'
+        'default' => 'mysql',
+        'connections' => [
+            'mysql' => [
+                'driver' => 'mysql', //mysql, pgsql
+                'host' => 'localhost',
+                'username' => 'root',
+                'password' => '',
+                'database' => 'mvc'
+            ]
+        ]
     ]
 
 ];

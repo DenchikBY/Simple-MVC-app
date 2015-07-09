@@ -36,7 +36,7 @@ abstract class Model
     public static function select($query = '')
     {
         $model = new static;
-        $result = DB::query('SELECT * FROM ' . $model->table . ' ' . $query)->fetchAll(PDO::FETCH_ASSOC);
+        $result = DB::select($model->table, $query);
         unset($model);
         for ($i = 0; $i < count($result); ++$i) {
             $result[$i] = new static($result[$i]);
