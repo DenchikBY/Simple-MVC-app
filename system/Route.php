@@ -82,14 +82,19 @@ class Route
     {
         $actionParams = [null, null];
         $counter = 0;
-        $regEx = preg_replace_callback('/{.+}/U', function ($matches) use (&$counter, &$actionParams) {
-            if ($matches[0] == '{controller}') {
+        $regEx = preg_replace_callback('/{.+}/U', function ($matches) use (&$counter, &$actionParams, &$route) {
+            $regEx = '([\d\w\-]+)';
+            $paramName = $matches[0];
+            if ($paramName == '{controller}') {
                 $actionParams[0] = $counter;
-            } elseif ($matches[0] == '{action}') {
+            } elseif ($paramName == '{action}') {
                 $actionParams[1] = $counter;
             }
+            if ($paramName[strlen($paramName) - 2] == '?' && strpos($route, $paramName) > 1) {
+                $regEx = '?([\d\w\-]+)?';
+            }
             ++$counter;
-            return '([0-9A-Za-z\-]+)';
+            return $regEx;
         }, $route);
         $regEx = str_replace('/', '\/', $regEx);
         $regEx = '/^' . $regEx . '$/';
