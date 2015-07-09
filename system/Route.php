@@ -90,8 +90,11 @@ class Route
             } elseif ($paramName == '{action}') {
                 $actionParams[1] = $counter;
             }
-            if ($paramName[strlen($paramName) - 2] == '?' && strpos($route, $paramName) > 1) {
-                $regEx = '?([\d\w\-]+)?';
+            if ($paramName[strlen($paramName) - 2] == '?') {
+                $regEx .= '?';
+                if (strpos($route, $paramName) > 1) {
+                    $regEx = '?' . $regEx;
+                }
             }
             ++$counter;
             return $regEx;
