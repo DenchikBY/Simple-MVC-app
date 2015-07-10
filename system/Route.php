@@ -82,15 +82,23 @@ class Route
     {
         $actionParams = [null, null];
         $counter = 0;
-        $regEx = preg_replace_callback('/{.+}/U', function ($matches) use (&$counter, &$actionParams, &$route) {
+        $regEx = preg_replace_callback('/{(\w+)(?:[:](.+))?(\?)?}/U', function ($matches) use (&$counter, &$actionParams, &$route) {
             $regEx = '([\d\w\-]+)';
-            $paramName = $matches[0];
-            if ($paramName == '{controller}') {
+            $paramName = $matches[1];
+            if ($paramName == 'controller') {
                 $actionParams[0] = $counter;
-            } elseif ($paramName == '{action}') {
+            } elseif ($paramName == 'action') {
                 $actionParams[1] = $counter;
             }
-            if ($paramName[strlen($paramName) - 2] == '?') {
+            $qKey = array_search('?', $matches);
+            $rKey = ($qKey == 3 || !$qKey) ? 2 : null;
+            if ($rKey && isset($matches[$rKey]) && strlen($matches[$rKey]) > 0) {
+                $pReg = &$matches[$rKey];
+                $regEx = $pReg;
+                if ($pReg[0] != '(') $regEx = '(' . $regEx;
+                if (substr($pReg, -1) != ')') $regEx .= ')';
+            }
+            if ($qKey > 0) {
                 $regEx .= '?';
                 if (strpos($route, $paramName) > 1) {
                     $regEx = '?' . $regEx;
