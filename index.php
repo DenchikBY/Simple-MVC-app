@@ -3,8 +3,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-use System\Route;
-
+define('START_TIME', time());
 define('BASE_PATH', __DIR__);
 define('APP_PATH', __DIR__ . DIRECTORY_SEPARATOR . 'app');
 define('SYSTEM_PATH', __DIR__ . DIRECTORY_SEPARATOR . 'system');
@@ -18,4 +17,5 @@ spl_autoload_register(function ($class) {
     }
 });
 
-Route::init();
+System\ErrorHandler::setHandlers();
+System\Route::init();
