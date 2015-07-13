@@ -1,20 +1,20 @@
 <?php namespace System;
 
-use PDO;
-
-abstract class Model
+abstract class Model extends QueryBuilder
 {
 
     protected $db, $attributes = [];
-    public static $primaryKey = 'id';
+    public $primaryKey = 'id';
     public $timestamps = true;
+    protected $table;
 
     public function __construct(array $data = null)
     {
-        @$this->db = &DB::getConnection();
-        if (!isset($this->table)) {
+        $this->db = DB::getConnection();
+        if (!$this->table) {
             $this->table = $this->generateTableName();
         }
+        parent::__construct($this->table);
         if ($data) $this->fill($data);
     }
 
@@ -33,63 +33,24 @@ abstract class Model
         $this->attributes = array_merge($this->attributes, $data);
     }
 
-    public static function select($query = '')
+    public function __get($name)
     {
-        $model = new static;
-        $result = DB::select($model->table, $query);
-        unset($model);
-        for ($i = 0; $i < count($result); ++$i) {
-            $result[$i] = new static($result[$i]);
-        }
-        return $result;
+        return isset($this->attributes[$name]) ? $this->attributes[$name] : null;
     }
 
-    public function insert(array $data = null)
+    public function __set($name, $value)
     {
-        if ($data) $this->fill($data);
-        if ($this->timestamps) {
-            $this->attributes['created_at'] = date('Y-m-d H:i:s');
-        }
-        $response = DB::insert($this->table, $this->attributes);
-        $this->attributes[self::$primaryKey] = $this->db->lastInsertId();
-        return $response;
-    }
-
-    public function update(array $data = null)
-    {
-        if ($data) {
-            $data['id'] = $this->attributes['id'];
-        } else {
-            $data = &$this->attributes;
-        }
-        if ($this->timestamps) {
-            $data['updated_at'] = date('Y-m-d H:i:s');
-        }
-        return DB::update($this->table, $data);
-    }
-
-    public function save(array $data = null)
-    {
-        if (isset($this->attributes[self::$primaryKey])) {
-            $this->update($data);
-        } else {
-            $this->insert($data);
-        }
-    }
-
-    public function __get($attr)
-    {
-        return isset($this->attributes[$attr]) ? $this->attributes[$attr] : null;
-    }
-
-    public function __set($attr, $value)
-    {
-        return $this->attributes[$attr] = $value;
+        return $this->attributes[$name] = $value;
     }
 
     public function getAttribute($name)
     {
         return $this->attributes[$name];
+    }
+
+    public function setAttribute($name, $value)
+    {
+        return $this->attributes[$name] = $value;
     }
 
 }

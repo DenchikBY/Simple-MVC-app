@@ -8,6 +8,7 @@ class DB
 
     private static $connections = [];
     private static $currentConnection = null;
+    private static $lastQuery;
 
     public static function getConnection($connection = null)
     {
@@ -20,7 +21,8 @@ class DB
             }
             self::$connections[$connection]->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
-        return self::$connections[$connection];
+        $return = &self::$connections[$connection];
+        return $return;
     }
 
     public static function closeConnection()
@@ -30,7 +32,19 @@ class DB
         }
     }
 
-    private static function implodeKeys(&$data)
+    private static function getPrimaryKey()
+    {
+        $className = get_called_class();
+        $class = new $className;
+        $primaryKey = 'id';
+        if ($class instanceof Model) {
+            $primaryKey = $class->primaryKey;
+        }
+        unset($class);
+        return $primaryKey;
+    }
+
+    private static function implodeKeys($data)
     {
         return implode(',', array_keys($data));
     }
@@ -48,8 +62,9 @@ class DB
     private static function implodeSetForUpdate(&$data)
     {
         $return = '';
+        $primaryKey = self::getPrimaryKey();
         foreach ($data as $attr => $value) {
-            if ($attr != Model::$primaryKey) {
+            if ($attr != $primaryKey) {
                 $return .= $attr . '="' . $value . '", ';
             }
         }
@@ -73,22 +88,44 @@ class DB
                 $values .= '(' . self::implodeValues($row) . '), ';
             }
             $values = substr($values, 0, -2);
-            $keys = @self::implodeKeys(array_shift($data));
+            $keys = self::implodeKeys(array_shift($data));
         }
         $query = 'INSERT INTO ' . $table . ' (' . $keys . ') VALUES ' . $values;
-        return self::getConnection()->query($query);
+        return self::query($query);
     }
 
-    public static function update($table, $data)
+    public static function update($table, $data, $condition = null)
     {
-        $query = 'UPDATE ' . $table . ' SET ' . self::implodeSetForUpdate($data) . ' WHERE ' . Model::$primaryKey . '=' . $data[Model::$primaryKey];
-        return self::getConnection()->query($query);
+        $query = 'UPDATE ' . $table . ' SET ' . self::implodeSetForUpdate($data) . ' ';
+        $query .= self::concatCondition($condition);
+        return self::query($query);
+    }
+
+    public static function delete($table, $condition = null)
+    {
+        $query = 'DELETE FROM ' . $table . ' ';
+        $query .= self::concatCondition($condition);
+        return self::query($query);
+    }
+
+    private static function concatCondition($condition = null)
+    {
+        if ($condition != null) {
+            if (strpos($condition, 'where') === false && strpos($condition, 'WHERE') === false) {
+                $condition = 'where ' . $condition;
+            }
+        } else {
+            $condition = '';
+        }
+        return $condition;
     }
 
     public static function query($query)
     {
+        $query = trim($query);
         $return = self::getConnection()->query($query);
         self::$currentConnection = null;
+        self::$lastQuery = $query;
         return $return;
     }
 
@@ -96,6 +133,16 @@ class DB
     {
         self::$currentConnection = $connection;
         return new self;
+    }
+
+    public static function table($table)
+    {
+        return new QueryBuilder($table);
+    }
+
+    public static function getLastQuery()
+    {
+        return self::$lastQuery;
     }
 
 }
