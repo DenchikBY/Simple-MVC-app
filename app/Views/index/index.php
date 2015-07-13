@@ -1,1 +1,2 @@
 Hi, <?= $name;?>!
+<?= url('registration');?>

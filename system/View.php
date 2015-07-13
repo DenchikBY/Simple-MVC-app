@@ -1,6 +1,5 @@
 <?php namespace System;
 
-
 class View
 {
 
@@ -16,11 +15,11 @@ class View
         return $this->renderFile($layoutPath);
     }
 
-    private function renderFile($path)
+    public function renderFile($path)
     {
         if (file_exists($path)) {
-            extract($this->data);
             ob_start();
+            extract($this->data);
             include $path;
             return ob_get_clean();
         } else {
