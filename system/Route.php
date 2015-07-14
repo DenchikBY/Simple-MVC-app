@@ -25,7 +25,9 @@ class Route
         $base = dirname($_SERVER['PHP_SELF']);
         self::$baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . $base;
         self::$requestUrl = substr($_SERVER['REQUEST_URI'], strlen($base));
-        if (self::$requestUrl != '/') {
+        if (self::$requestUrl == '' || self::$requestUrl == '//') {
+            self::$requestUrl = '/';
+        } else if (self::$requestUrl != '/') {
         	self::$requestUrl = ltrim(self::$requestUrl, '/');
         }
     }
